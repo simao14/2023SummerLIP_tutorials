@@ -17,7 +17,12 @@ class FeedforwardNetwork(nn.Module):
         super().__init__()
 
         self.first_layer = nn.Linear(n_features, hidden_size)
-        #implement the rest of the model here                    
+        
+        # Implement the rest of the model here, try and do a simple model with 3 layers, you can make a layer by calling nn.Linear(input_size,output_size)        
+        # you can append the layers to nn.Sequential() and then the forward step will go trough them sequentially. Don't forget the activation function.
+        # Ps: since we are using cross entropy for the loss function you dont need to do softmax at the end since this loss function already has it incorporated.
+
+        self.order=nn.Sequential(self.first_layer) 
         
     def forward(self, x, **kwargs):
         
@@ -27,8 +32,13 @@ class FeedforwardNetwork(nn.Module):
 
 def train_batch(X, y, model, optimizer, criterion, **kwargs):
 
- 
-   
+    optimizer.zero_grad()    # reset the grad value
+
+    # finish this function. You need to call your model to obtain the predicted labels
+    # then you can do criterion(y_predicted,y_true) to obtain your loss
+    # finally simple do loss.backward() to performed backwards propagation and optimizer.step() to update the weights
+    # you can do loss.item() to only obtain the loss value with nothing else attached
+
     return "Error:Not implemented"
     
 
@@ -63,7 +73,7 @@ def main():
     parser.add_argument('-epochs', default=20, type=int)
     parser.add_argument('-batch_size', default=32, type=int)
     parser.add_argument('-hidden_size', type=int, default=64)
-    parser.add_argument('-layers', type=int, default=3)
+    parser.add_argument('-layers', type=int, default=1)
     parser.add_argument('-dropout', type=float, default=0.0)
     parser.add_argument('-learning_rate', type=float, default=0.01)
     parser.add_argument('-l2_decay', type=float, default=0.0)
