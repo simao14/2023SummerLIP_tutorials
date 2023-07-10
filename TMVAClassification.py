@@ -27,7 +27,7 @@ def DNN(n_classes, n_features, hidden_size, layers,activation_type, dropout):
 
 def train(model, train_loader, val_loader, num_epochs, batch_size, optimizer, criterion, save_best, scheduler):
     
-    trainer = optimizer(model.parameters(), lr=0.0001, weight_decay=0.001)
+    trainer = optimizer(model.parameters(), lr=0.01, weight_decay=0.0)
     schedule, schedulerSteps = scheduler
     best_val = None
  
@@ -93,33 +93,12 @@ def predict(model, test_X, batch_size=32):
  
     return preds.numpy()
 
-def replacespecial(stages):
-
-    string=str(stages[0])
-    for i in range(1,len(stages)):
-        string+= "_"+ str(stages[i]) 
-    return string
-
-def varset(stages):
-    
-    var=["Btrk1Pt","Btrk2Pt","Trk1DCAz","Trk2DCAz","Trk1DCAxy","Trk2DCAxy","MassDis","dls","Balpha","dls2D","cos(Bdtheta)","Bchi2cl","Btrk1Eta","Btrk2Eta","Bmass","BDT_pt_1_2","BDT_pt_2_3","BDT_pt_3_5","BDT_pt_5_7","BDT_pt_7_10","BDT_pt_10_15","BDT_pt_15_20","BDT_pt_20_50","Btktkmass","2*Btktkmass","-1*Btktkmass","abs(Btktkmass-1.019455)","2*abs(Btktkmass-1.019455)"]
-    varcon=["Btrk1Pt","Btrk2Pt","Trk1DCAz := abs(Btrk1Dz1/Btrk1DzError1)","Trk2DCAz := abs(Btrk2Dz1/Btrk2DzError1)","Trk1DCAxy := abs(Btrk1Dxy1/Btrk1DxyError1)","Trk2DCAxy := abs(Btrk2Dxy1/Btrk2DxyError1)","MassDis := abs(Btktkmass-1.019455)","dls := BsvpvDistance/BsvpvDisErr","Balpha","dls2D := Bd0","cos(Bdtheta)","Bchi2cl","Btrk1Eta","Btrk2Eta","Bmass","BDT_pt_1_2","BDT_pt_2_3","BDT_pt_3_5","BDT_pt_5_7","BDT_pt_7_10","BDT_pt_10_15","BDT_pt_15_20","BDT_pt_20_50","Btktkmass","2*Btktkmass","-1*Btktkmass","abs(Btktkmass-1.019455)","2*abs(Btktkmass-1.019455)"]
-    stage=[]
-    varinfo=[]
-    for i in range(len(stages)):
-        stage.append(varcon[stages[i]])
-        varinfo.append(var[stages[i]])
-    return stage , varinfo
-
 parser = argparse.ArgumentParser()
-parser.add_argument('ptmin', type=float)
-parser.add_argument('ptmax', type=float)
-parser.add_argument('-epochs', default=30, type=int)
-parser.add_argument('-batch_size', default=256, type=int)
-parser.add_argument('-hidden_size', type=int, default=256)
-parser.add_argument('-layers', type=int, default=10)
+parser.add_argument('-epochs', default=20, type=int)
+parser.add_argument('-batch_size', default=32, type=int)
+parser.add_argument('-hidden_size', type=int, default=64)
+parser.add_argument('-layers', type=int, default=3)
 parser.add_argument('-dropout', type=float, default=0.0)
-parser.add_argument('-stages', type=int, default=[0,2,4,7,8,11])
 parser.add_argument('-activation',
                     choices=['tanh', 'relu'], default='tanh')
 parser.add_argument('-optimizer',
@@ -129,59 +108,34 @@ opt = parser.parse_args()
 TMVA.Tools.Instance()
 TMVA.PyMethodBase.PyInitialize()
 
-stage,varinfo=varset(opt.stages)
-stagestring=replacespecial(opt.stages)
-
-cut="(pPAprimaryVertexFilter == 1 && pBeamScrapingFilter == 1 && HLT_HIL1DoubleMu0_v1 == 1)  &&  (Bmu1isTriggered == 1 && Bmu2isTriggered == 1 ) && (Btrk1Pt > 0.5 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2.0 && Bpt > 2 && abs(Btrk1Eta-0.0) < 2.4  && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.47-1.89*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.5))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.47-1.89*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.5))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isTrackerMuon&&Bmu2isTrackerMuon&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&abs(Btrk1Eta)<2.4&&Btrk1Pt>0.5)  && (Btrk1PixelHit + Btrk1StripHit > 10) &&  (Btrk1PtErr/Btrk1Pt < 0.1)&& Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18   && (abs(PVz)<15))"
-cuts="%s && Bgen==23333 && Bpt>%f && Bpt<%f " % (cut, opt.ptmin, opt.ptmax)
-cutb="%s &&  ((Bmass - 5.27929 ) > 0.25 &&  (Bmass - 5.27929) < 0.30) && Bpt>%f && Bpt<%f" % (cut, opt.ptmin, opt.ptmax)
+cuts=""
+cutb=""
 
 mycutS=TCut(cuts)
 mycutB=TCut(cutb)
-
-#mycutS=TCut("")
-#mycutB=TCut("")
 
 if not os.path.exists("dataset/results/rootfiles"):
     os.makedirs("dataset/results/rootfiles")
 if not os.path.exists("dataset/weights"):
     os.makedirs("dataset/weights")
 
-outfname='dataset/results/rootfiles/TMVA_pytorch_%s_%s_%s.root' % (opt.ptmin ,opt.ptmax ,stagestring)
-outweightname='TMVA_pytorch_%s_%s_%s' % (opt.ptmin ,opt.ptmax ,stagestring)
+outfname='dataset/results/rootfiles/TMVA_pytorch.root' 
+outweightname='TMVA_pytorch' 
 output = TFile.Open(outfname, 'RECREATE') 
 
 factory = TMVA.Factory('TMVAClassification', output, '!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification')
 
 dataloader = TMVA.DataLoader('dataset')
 
-inputS = TFile.Open("/lstore/cms/simao/sample/BPMC_3_60.root")
-inputB = TFile.Open("/lstore/cms/simao/sample/BPData_3_60.root")
-#inputS = TFile.Open("~/Desktop/UNI/LIP/mnt/data/BPMC_3_60.root")
-#inputB = TFile.Open("~/Desktop/UNI/LIP/mnt/data/BPData_3_60.root")
-signal = inputS.Get("Bfinder/ntKp")
-signal.AddFriend("hltanalysis/HltTree")
-signal.AddFriend("hiEvtAnalyzer/HiTree")
-signal.AddFriend("skimanalysis/HltTree")
-background = inputB.Get("Bfinder/ntKp")
-background.AddFriend("hltanalysis/HltTree")
-background.AddFriend("hiEvtAnalyzer/HiTree")
-background.AddFriend("skimanalysis/HltTree")
-
-
-for i in range(len(stage)):
-    dataloader.AddVariable(stage[i])
-
-#if not os.path.isfile('tmva_class_example.root'):
-#    call(['curl', '-L', '-O', 'http://root.cern.ch/files/tmva_class_example.root'])
-# 
-#data = TFile.Open('tmva_class_example.root')
-#signal = data.Get('TreeS')
-#background = data.Get('TreeB')
+if not os.path.isfile('tmva_class_example.root'):
+    call(['curl', '-L', '-O', 'http://root.cern.ch/files/tmva_class_example.root'])
  
+data = TFile.Open('tmva_class_example.root')
+signal = data.Get('TreeS')
+background = data.Get('TreeB')
 
-#for branch in signal.GetListOfBranches():
-#    dataloader.AddVariable(branch.GetName())
+for branch in signal.GetListOfBranches():
+    dataloader.AddVariable(branch.GetName())
 
 if not os.path.exists("dataset/weights/%s" % outweightname):
     os.makedirs("dataset/weights/%s" % outweightname)
@@ -196,7 +150,7 @@ dataloader.AddBackgroundTree( background, backgroundWeight )
 
 dataloader.PrepareTrainingAndTestTree( mycutS, mycutB, "nTrain_Signal=0:nTrain_Background=0:nTest_Signal=0:nTest_Background=0:SplitMode=Random:SplitSeed=101:NormMode=NumEvents:!V" )
 n_classes = 2
-n_feats = len(stage)
+n_feats = 4
 
 model = DNN(
     n_classes,
@@ -238,7 +192,7 @@ factory.EvaluateAllMethods()
 
 # Plot ROC Curves
 roc = factory.GetROCCurve(dataloader)
-roc.SaveAs('dataset/results/ROC_ClassificationPyTorch_%s_%s_%s.png' % (opt.ptmin ,opt.ptmax ,stagestring))
+roc.SaveAs('dataset/results/ROC_ClassificationPyTorch.png')
 cutsr=ROOT.TString("cuts")
 cutbr=ROOT.TString("cutb")
 varinfor=ROOT.TString("varinfo")
