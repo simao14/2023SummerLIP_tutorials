@@ -17,6 +17,12 @@ You can either check the documentation on how to do it (https://docs.conda.io/pr
                                                             
 This should give us all the packages we will need excepto pytorch. Conda is a bit stubborn so he will try and install an older version of pytorch if we try and load it from conda-forge so we will need to install it separatly (in general try not to do this, it's usually better to install all the packages of your environment when you create it to avoid future complications).
 
-Now run conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia to install pytorch into your environment (make sure it is activated, if not run conda activate myenv).
+Now run 
 
-Great now we have everything we need.
+    conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvidia 
+
+to install pytorch into your environment (make sure it is activated, if not run conda activate myenv).
+
+Great now we have everything we need. If you have any doubts about how to work with your conda environment go check the official documentation, it should be straighforward.
+
+If you haven't already go and fork this repository (it will create a copy but of your ownership that's still connected to this one)
