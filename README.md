@@ -75,7 +75,11 @@ If you dont want to run the notebook on your computer here is a link to a google
 For more information about this topics you can check out this sources:
 
 -uproot intro: https://masonproffitt.github.io/uproot-tutorial/
+
 -uproot bit more advanced but has less examples: https://uproot.readthedocs.io/en/latest/basic.html
+
 -pytorch+TMVA main page: https://root.cern/blog/tmva-pytorch/
+
 -pytorch+TMVA tutorial:https://anirudhdagar.ml/gsoc/tmva/pytorch/root/2020/08/21/TMVA-PyTorch-Tutorial.html
+
 -pytorch + TMVA examples:https://github.com/root-project/root/tree/master/tutorials/tmva
