@@ -25,4 +25,8 @@ to install pytorch into your environment (make sure it is activated, if not run 
 
 Great now we have everything we need. If you have any doubts about how to work with your conda environment go check the official documentation, it should be straighforward.
 
-If you haven't already go and fork this repository (it will create a copy but of your ownership that's still connected to this one)
+If you haven't already go and fork this repository (it will create a copy but of your ownership that's still connected to this one). The option should be at the right of the repository's name.
+
+Now you have a few options on how to proceed, you can either clone this repository (the forked one that's yours, don't touch my stuff) to your LIP machine and work entirely there, or you can clone it on your personal computer to edit the codes there and then send them to Pauli. You can even clone it on both and push the changes from your computer and pull them on pauli.
+
+Whatever option you choose 
