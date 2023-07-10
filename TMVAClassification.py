@@ -25,9 +25,9 @@ def DNN(n_classes, n_features, hidden_size, layers,activation_type, dropout):
     model.append(nn.Softmax(dim=1)) 
     return model
 
-def train(model, train_loader, val_loader, num_epochs, batch_size, optimizer, criterion, save_best, scheduler):
-    
-    trainer = optimizer(model.parameters(), lr=0.01, weight_decay=0.0)
+def train(model, train_loader, val_loader, num_epochs, batch_size, optimizer, criterion, save_best, scheduler):  #for the method to work this function needs to be exactly like this
+                                                                                                                 
+    trainer = optimizer(model.parameters(), lr=0.01, weight_decay=0.0)                                           # on change the learning rate and decay, leave the rest as is if you dont want to risk this breaking
     schedule, schedulerSteps = scheduler
     best_val = None
  
@@ -76,7 +76,7 @@ def train(model, train_loader, val_loader, num_epochs, batch_size, optimizer, cr
  
     return model
 
-def predict(model, test_X, batch_size=32):
+def predict(model, test_X, batch_size=32):                # same as before, better left as his
     # Set to eval mode
     model.eval()
  
@@ -105,13 +105,13 @@ parser.add_argument('-optimizer',
                     choices=['sgd', 'adam'], default='adam')
 opt = parser.parse_args()
 
-TMVA.Tools.Instance()
+TMVA.Tools.Instance()               #need to run this two to load up TMVA
 TMVA.PyMethodBase.PyInitialize()
 
-cuts=""
+cuts=""                            #if you want to apply any kind of cuts to your data you can insert them here
 cutb=""
 
-mycutS=TCut(cuts)
+mycutS=TCut(cuts)                   # they must still be passed as TCuts to the dataloader
 mycutB=TCut(cutb)
 
 if not os.path.exists("dataset/results/rootfiles"):
@@ -140,7 +140,7 @@ for branch in signal.GetListOfBranches():
 if not os.path.exists("dataset/weights/%s" % outweightname):
     os.makedirs("dataset/weights/%s" % outweightname)
 
-(ROOT.TMVA.gConfig().GetIONames()).fWeightFileDir ="weights/%s" % outweightname 
+(ROOT.TMVA.gConfig().GetIONames()).fWeightFileDir ="weights/%s" % outweightname #this changes the default file where the weights are going to be saved on 
 
 signalWeight     = 1.0
 backgroundWeight = 1.0
@@ -170,15 +170,18 @@ elif opt.optimizer =="adam":
 # get a loss criterion
 loss = nn.CrossEntropyLoss()
 
-load_model_custom_objects = {"optimizer": optimizer, "criterion": loss, "train_func": train, "predict_func": predict}
+load_model_custom_objects = {"optimizer": optimizer, "criterion": loss, "train_func": train, "predict_func": predict}    # this lets our TMVA know how to train our pytorch model. It must be structured exactly like this
 
-m = torch.jit.script(model)
+m = torch.jit.script(model)         #saves our model so we can import it later on TMVA
 torch.jit.save(m, "dataset/results/modelClassification.pt")
 print(m)
 
 
 # Book methods
-factory.BookMethod(dataloader, TMVA.Types.kPyTorch, 'PyNN',
+
+# Imports the pytorch method by specifying the saved model from before. You can also specify to output the trained model if you wish.
+# Here im also importing a BDT model just for comparison's sake
+factory.BookMethod(dataloader, TMVA.Types.kPyTorch, 'PyNN',      
                 "H:!V:VarTransform=N:FilenameModel=dataset/results/modelClassification.pt:FilenameTrainedModel=dataset/results/trainedModelClassification.pt:NumEpochs=%s:BatchSize=%s" % (opt.epochs,opt.batch_size)) 
 factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDTs",
                 "!H:!V:NTrees=200:MinNodeSize=5.0%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.50:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=30")
