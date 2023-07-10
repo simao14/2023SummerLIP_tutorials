@@ -70,3 +70,12 @@ If you and your colleague both have important changes in the files and you find 
 
 You can now go try and solve the tutorials on here!  You can start with either the root or uproot tutorial and after these two go to the pytorch one.
 
+If you dont want to run the notebook on your computer here is a link to a google colab to run it - https://colab.research.google.com/drive/1G0_sq-lG4AcBMic7_olvzc0pE8U9_jU9?usp=sharing
+
+For more information about this topics you can check out this sources:
+
+-uproot intro: https://masonproffitt.github.io/uproot-tutorial/
+-uproot bit more advanced but has less examples: https://uproot.readthedocs.io/en/latest/basic.html
+-pytorch+TMVA main page: https://root.cern/blog/tmva-pytorch/
+-pytorch+TMVA tutorial:https://anirudhdagar.ml/gsoc/tmva/pytorch/root/2020/08/21/TMVA-PyTorch-Tutorial.html
+-pytorch + TMVA examples:https://github.com/root-project/root/tree/master/tutorials/tmva
