@@ -2,7 +2,7 @@
 
 Welcome to this quick guide to help you get started on your summer internship at LIP. This guide will cover how to use the Pauli machines, how to use git and how to use python and uproot for machine, with sprinkles of ROOT and TMVA.
 
-So let's start with the LIP machines, if you already have acess to them and have them set up simply do ssh username@pauli.ncg.ingrid.pt and you are in! I recommend going into your .ssh folder on your computer and creating a file called config (if none already exists) and configure the Pauli machines to avoid having to write so much everytime you need to enter.
+So let's start with the LIP machines, if you already have access to them and have them set up simply do ssh username@pauli.ncg.ingrid.pt and you are in! I recommend going into your .ssh folder on your computer and creating a file called config (if none already exists) and configure the Pauli machines to avoid having to write so much everytime you need to enter.
 If you do something like this then you only need to write ssh lip to access the machines, of course you can change this by changing the name after host. Dont worry about the last parameter that's just to avoid timeout's.
 
     Host lip
